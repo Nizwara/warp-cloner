@@ -90,6 +90,10 @@ async def worker(id: int) -> None:
 
 
 async def main() -> None:
+    if config.PORT:
+        from web import start_web_server
+        await start_web_server(port=config.PORT)
+
     tasks = []
 
     for i in range(config.THREADS_COUNT):

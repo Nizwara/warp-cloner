@@ -1,4 +1,9 @@
 services:
-  runner:
+  warp-cloner:
     build: .
+    container_name: warp-cloner
     restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./output.txt:/app/output.txt

@@ -6,7 +6,7 @@ from pydantic_settings import (
 from typing import Union
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
 
     BASE_KEYS: list[str] = Field(
         validation_alias='BASE_KEYS',
@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     OUTPUT_FILE: str = Field(validation_alias='OUTPUT_FILE', default='output.txt')
     OUTPUT_FORMAT: str = Field(validation_alias='OUTPUT_FORMAT', default='{key} | {referral_count}')
     RETRY_COUNT: int = Field(validation_alias='RETRY_COUNT', default=3)
+    PORT: Union[int, None] = Field(validation_alias='PORT', default=None)
 
 
 config = Settings()
