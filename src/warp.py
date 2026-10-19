@@ -194,7 +194,7 @@ async def get_account(path: str, session: ClientSession, reg_id: str, token: str
 
     return json
 
-async def clone_key(key: str, proxy_url: Optional[str], device_model: Optional[str]) -> Tuple[GetInfoData, RegisterData,  Optional[str]]:
+async def clone_key(key: str, proxy_url: Optional[str], device_model: Optional[str]) -> Tuple[GetInfoData, RegisterData, Optional[str]]:
     connector: ProxyConnector | None = ProxyConnector.from_url(
         proxy_url
     ) if proxy_url else None
@@ -230,21 +230,11 @@ async def clone_key(key: str, proxy_url: Optional[str], device_model: Optional[s
 
         register_data: RegisterData = await register(path=path, session=session, data=register_body)
 
-        refferer_body: dict[str, str] = {
-            'fcm_token': '',
-            'install_id': '',
-            'key': WireGuard.pubkey(privkey=WireGuard.genkey()),
-            'locale': 'en_US',
-            'model': 'PC',
-            'tos': datetime.datetime.now(tz=datetime.timezone.utc).isoformat(),
-            'type': 'Android',
-            'referrer': register_data['id'],
-        }
-
-        await register(path, session, refferer_body)
-
-        await add_key(path, session, register_data['id'], register_data['token'], key)
-        await add_key(path, session, register_data['id'], register_data['token'], register_data['account']['license'])
+        try:
+            await add_key(path, session, register_data['id'], register_data['token'], key)
+        except Exception:
+            # Fallback to key generated for this registration
+            await add_key(path, session, register_data['id'], register_data['token'], register_data['account']['license'])
 
         information: GetInfoData = await get_account(path, session, register_data['id'], register_data['token'])
 
